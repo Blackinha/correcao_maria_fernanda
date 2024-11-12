@@ -9,6 +9,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
+import InputMask from "react-input-mask";
 
 export default function AutorFormPage(props) {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function AutorFormPage(props) {
     email: "",
     genero: "",
     literario: "",
+    telefone: "",
   };
 
   const validationSchema = Yup.object().shape({
@@ -51,6 +53,7 @@ export default function AutorFormPage(props) {
     dataNascimento: Yup.date().required("Campo obrigatório").nullable(),
     email: Yup.string().email("Email inválido").required("Campo obrigatório"),
     genero: Yup.string().required("Campo obrigatório"),
+    telefone: Yup.string().required("Campo Obrigatório"),
   });
 
   const salvar = (dados) => {
@@ -182,6 +185,25 @@ export default function AutorFormPage(props) {
                   <Form.Control.Feedback type="invalid">
                     {errors.genero}
                   </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group as={Col}>
+                  <Form.Label>Telefone:</Form.Label>
+                  <InputMask
+                    mask="(99) 99999-9999"
+                    value={values.telefone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  >
+                    {(inputProps) => (
+                      <Form.Control
+                        {...inputProps}
+                        name="telefone"
+                        isValid={touched.telefone && !errors.telefone}
+                        isInvalid={touched.telefone && errors.telefone}
+                      />
+                    )}
+                  </InputMask>
                 </Form.Group>
               </Row>
 

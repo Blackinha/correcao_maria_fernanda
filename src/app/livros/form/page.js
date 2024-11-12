@@ -8,6 +8,7 @@ import { Button, Col, Form, Row, Card } from "react-bootstrap";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import * as Yup from "yup";
+import InputMask from "react-input-mask";
 
 export default function LivroFormPage(props) {
   const [editoraFiltrada, setEditoraFiltrada] = useState([]);
@@ -46,7 +47,7 @@ export default function LivroFormPage(props) {
     autores: "",
     anoPublicacao: "",
     literario: "",
-    preco: 1,
+    preco: 0,
     editoras: "",
     quantidadeEstoque: 1,
     descricao: "",
@@ -236,15 +237,22 @@ export default function LivroFormPage(props) {
             <Row className="mb-2">
               <Form.Group as={Col}>
                 <Form.Label>Preço:</Form.Label>
-                <Form.Control
-                  name="preco"
-                  type="number"
+                <InputMask
+                  mask="R$ 999,99"
+                  maskPlaceholder={null}
                   value={values.preco}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={touched.preco && !errors.preco}
-                  isInvalid={touched.preco && errors.preco}
-                />
+                >
+                  {(inputProps) => (
+                    <Form.Control
+                      {...inputProps}
+                      name="preco"
+                      isValid={touched.preco && !errors.preco}
+                      isInvalid={touched.preco && errors.preco}
+                    />
+                  )}
+                </InputMask>
                 <Form.Control.Feedback type="invalid">
                   {errors.preco}
                 </Form.Control.Feedback>
