@@ -9,10 +9,10 @@ export default function Pagina({ titulo, children }) {
       <Navbar bg="success" data-bs-theme="success">
         <Container>
           <Navbar.Brand href="/">Biblioteca</Navbar.Brand>
-          <Nav className="me-auto">
+          <Nav className="me-end">
             <Nav.Link href="/livros">Livros</Nav.Link>
             <Nav.Link href="/autores">Autores</Nav.Link>
-            <Nav.Link href="/categorias">Categorias</Nav.Link>
+            <Nav.Link href="/kits">Kits</Nav.Link>
             <Nav.Link href="/editoras">Editoras</Nav.Link>
             <Nav.Link href="/emprestimos">Empréstimos</Nav.Link>
           </Nav>
@@ -27,7 +27,9 @@ export default function Pagina({ titulo, children }) {
           textAlign: "center",
         }}
       >
-        <h1>{titulo}</h1>
+        <h1>
+          <b>{titulo}</b>
+        </h1>
       </div>
 
       {/* Conteúdo da Página */}

@@ -3,16 +3,36 @@
 import Pagina from "@/components/Pagina";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button, Col, Form, Row, Card } from "react-bootstrap";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { v4 } from "uuid";
 import * as Yup from "yup";
+import InputMask from "react-input-mask";
 
 export default function EmprestimoFormPage(props) {
+  const [editoraFiltrada, setEditoraFiltrada] = useState([]);
+  const [autorFiltrado, setAutorFiltrado] = useState([]);
+  const [livroFiltrado, setLivroFiltrado] = useState([]);
+
+  const editoras = JSON.parse(localStorage.getItem("editoras")) || [];
+  const autores = JSON.parse(localStorage.getItem("autores")) || [];
+  const livros = JSON.parse(localStorage.getItem("livros")) || [];
+
   const router = useRouter();
   const emprestimos = JSON.parse(localStorage.getItem("emprestimos")) || [];
   const id = props.searchParams.id;
   const emprestimoEditado = emprestimos.find((item) => item.id === id);
+
+  useEffect(() => {
+    if (autores.length > 0) setAutorFiltrado(autores);
+  }, [autores]);
+  useEffect(() => {
+    if (editoras.length > 0) setEditoraFiltrada(editoras);
+  }, [editoras]);
+  useEffect(() => {
+    if (livros.length > 0) setLivroFiltrado(livros);
+  }, [livros]);
 
   // Função para salvar os dados
   function salvar(dados) {
@@ -31,20 +51,23 @@ export default function EmprestimoFormPage(props) {
 
   // Valores iniciais
   const initialValues = {
-    livro: "",
-    emprestadoPara: "",
+    livros: "",
+    autores: "",
+    editoras: "",
+    solicitante: "",
     dataEmprestimo: "",
     dataDevolucao: "",
-    status: "",
-    descricao: "",
-    isbn: "", // ISBN do livro
-    observacoes: "", // Observações adicionais
+    literario: "",
+    taxa: "",
   };
 
   // Validação
   const validationSchema = Yup.object().shape({
-    livro: Yup.string().required("Campo obrigatório"),
-    emprestadoPara: Yup.string().required("Campo obrigatório"),
+    solicitante: Yup.string().required("Campo Obrigatório"),
+    livros: Yup.string().required("Campo obrigatório"),
+    autores: Yup.string().required("Campo obrigatório"),
+    editoras: Yup.string().required("Campo obrigatório"),
+    literario: Yup.string().required("Campo Obrigatório"),
     dataEmprestimo: Yup.date().required("Campo obrigatório"),
     dataDevolucao: Yup.date()
       .min(
@@ -52,10 +75,7 @@ export default function EmprestimoFormPage(props) {
         "A data de devolução não pode ser antes da data de empréstimo"
       )
       .required("Campo obrigatório"),
-    status: Yup.string().required("Campo obrigatório"),
-    descricao: Yup.string().required("Campo obrigatório"),
-    isbn: Yup.string().required("Campo obrigatório"), // Validação para o ISBN
-    observacoes: Yup.string(), // Campo para observações
+    taxa: Yup.string().required("Campo obrigatório"),
   });
 
   // Cálculos para o dashboard
@@ -107,38 +127,116 @@ export default function EmprestimoFormPage(props) {
               <Form onSubmit={handleSubmit}>
                 <Row className="mb-2">
                   <Form.Group as={Col}>
-                    <Form.Label>Título do Livro:</Form.Label>
+                    <Form.Label>Solicitante:</Form.Label>
                     <Form.Control
-                      name="livro"
+                      name="solicitante"
                       type="text"
-                      value={values.livro}
+                      value={values.solicitante}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      isValid={touched.livro && !errors.livro}
-                      isInvalid={touched.livro && errors.livro}
+                      isValid={touched.solicitante && !errors.solicitante}
+                      isInvalid={touched.solicitante && errors.solicitante}
                     />
                     <Form.Control.Feedback type="invalid">
-                      {errors.livro}
+                      {errors.solicitante}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Row>
 
                 <Row className="mb-2">
                   <Form.Group as={Col}>
-                    <Form.Label>Emprestado Para:</Form.Label>
-                    <Form.Control
-                      name="emprestadoPara"
-                      type="text"
-                      value={values.emprestadoPara}
+                    <Form.Label>Livro:</Form.Label>
+                    <Form.Select
+                      name="livros"
+                      value={values.livros}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      isValid={touched.emprestadoPara && !errors.emprestadoPara}
-                      isInvalid={
-                        touched.emprestadoPara && errors.emprestadoPara
-                      }
-                    />
+                      isValid={touched.livros && !errors.livros}
+                      isInvalid={touched.livros && errors.livros}
+                    >
+                      <option value="">Selecione</option>
+                      {livroFiltrado.map((livro) => (
+                        <option key={livro.titulo} value={livro.titulo}>
+                          {livro.titulo}
+                        </option>
+                      ))}
+                    </Form.Select>
                     <Form.Control.Feedback type="invalid">
-                      {errors.emprestadoPara}
+                      {errors.livros}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-2">
+                  <Form.Group as={Col}>
+                    <Form.Label>Autor:</Form.Label>
+                    <Form.Select
+                      name="autores"
+                      value={values.autores}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isValid={touched.autores && !errors.autores}
+                      isInvalid={touched.autores && errors.autores}
+                    >
+                      <option value="">Selecione</option>
+                      {autorFiltrado.map((autor) => (
+                        <option key={autor.nome} value={autor.nome}>
+                          {autor.nome}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.autores}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-2">
+                  <Form.Group as={Col}>
+                    <Form.Label>Editora:</Form.Label>
+                    <Form.Select
+                      name="editoras"
+                      value={values.editoras}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isValid={touched.editoras && !errors.editoras}
+                      isInvalid={touched.editoras && errors.editoras}
+                    >
+                      <option value="">Selecione</option>
+                      {editoraFiltrada.map((editor) => (
+                        <option key={editor.nome} value={editor.nome}>
+                          {editor.nome}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.editoras}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Row>
+
+                <Row className="mb-2">
+                  <Form.Group as={Col}>
+                    <Form.Label>Gênero Literário:</Form.Label>
+                    <Form.Select
+                      name="literario"
+                      value={values.literario}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isValid={touched.literario && !errors.literario}
+                      isInvalid={touched.literario && errors.literario}
+                    >
+                      <option value="">Selecione</option>
+                      <option value="Terror">Terror</option>
+                      <option value="Suspense">Suspense</option>
+                      <option value="Romance">Romance</option>
+                      <option value="Fantasia">Fantasia</option>
+                      <option value="Mistério">Mistério</option>
+                      <option value="Aventura">Aventura</option>
+                      <option value="Drama">Drama</option>
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.literario}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Row>
@@ -183,77 +281,25 @@ export default function EmprestimoFormPage(props) {
 
                 <Row className="mb-2">
                   <Form.Group as={Col}>
-                    <Form.Label>Status:</Form.Label>
-                    <Form.Select
-                      name="status"
-                      value={values.status}
+                    <Form.Label>Taxa:</Form.Label>
+                    <InputMask
+                      mask="R$ 999,99"
+                      maskPlaceholder={null}
+                      value={values.taxa}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      isValid={touched.status && !errors.status}
-                      isInvalid={touched.status && errors.status}
                     >
-                      <option value="">Selecione</option>
-                      <option value="Em Andamento">Em Andamento</option>
-                      <option value="Devolvido">Devolvido</option>
-                    </Form.Select>
+                      {(inputProps) => (
+                        <Form.Control
+                          {...inputProps}
+                          name="taxa"
+                          isValid={touched.taxa && !errors.taxa}
+                          isInvalid={touched.taxa && errors.taxa}
+                        />
+                      )}
+                    </InputMask>
                     <Form.Control.Feedback type="invalid">
-                      {errors.status}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Row>
-
-                <Row className="mb-2">
-                  <Form.Group as={Col}>
-                    <Form.Label>Descrição:</Form.Label>
-                    <Form.Control
-                      name="descricao"
-                      as="textarea"
-                      rows={3}
-                      value={values.descricao}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.descricao && !errors.descricao}
-                      isInvalid={touched.descricao && errors.descricao}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.descricao}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Row>
-
-                <Row className="mb-2">
-                  <Form.Group as={Col}>
-                    <Form.Label>ISBN:</Form.Label>
-                    <Form.Control
-                      name="isbn"
-                      type="text"
-                      value={values.isbn}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.isbn && !errors.isbn}
-                      isInvalid={touched.isbn && errors.isbn}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.isbn}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Row>
-
-                <Row className="mb-2">
-                  <Form.Group as={Col}>
-                    <Form.Label>Observações:</Form.Label>
-                    <Form.Control
-                      name="observacoes"
-                      as="textarea"
-                      rows={3}
-                      value={values.observacoes}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isValid={touched.observacoes && !errors.observacoes}
-                      isInvalid={touched.observacoes && errors.observacoes}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.observacoes}
+                      {errors.taxa}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Row>

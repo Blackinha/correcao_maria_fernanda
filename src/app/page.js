@@ -4,9 +4,9 @@ import Pagina from "@/components/Pagina";
 import { Button, Card, Col, Row } from "react-bootstrap";
 
 export default function BibliotecaPage() {
-  const Livros = JSON.parse(localStorage.getItem("livros")) || [];
+  const livros = JSON.parse(localStorage.getItem("livros")) || [];
   const autores = JSON.parse(localStorage.getItem("autores")) || [];
-  const Categorias = JSON.parse(localStorage.getItem("categorias")) || [];
+  const kits = JSON.parse(localStorage.getItem("kits")) || [];
   const editoras = JSON.parse(localStorage.getItem("editoras")) || [];
   const emprestimos = JSON.parse(localStorage.getItem("emprestimos")) || [];
 
@@ -15,7 +15,7 @@ export default function BibliotecaPage() {
       nome: "Livros",
       imagem:
         "https://blog.unis.edu.br/hubfs/Imported_Blog_Media/15-livros-incriveis-para-todo-estudante-ler.jpeg",
-      quantidade: Livros.length,
+      quantidade: livros.length,
       link: "/livros",
     },
     {
@@ -26,16 +26,16 @@ export default function BibliotecaPage() {
       link: "/autores",
     },
     {
-      nome: "Categorias",
+      nome: "kits",
       imagem:
-        "https://redata.com.br/wp-content/uploads/2024/06/1.png",
-      quantidade: Categorias.length,
-      link: "/categorias",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWskFTVebAS97VJb-gPspEeJKohV4j7nUfiw&s.png",
+      quantidade: kits.length,
+      link: "/kits",
     },
     {
       nome: "Editoras",
       imagem:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuGWVmcOhk96X5L14JcK8OznjjVleFe0cysg&s",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuGWVmcOhk96X5L14JcK8OznjjVleFe0cysg&s.png",
       quantidade: editoras.length,
       link: "/editoras",
     },
@@ -59,8 +59,10 @@ export default function BibliotecaPage() {
                 src={item.imagem}
                 style={{ objectFit: "cover", height: "200px" }} // Ajuste de imagem
               />
-              <Card.Body>
-                <Card.Title>{item.nome}</Card.Title>
+              <Card.Body className="text-center">
+                <Card.Title>
+                  <b>{item.nome}</b>
+                </Card.Title>
                 <p>Cadastrados: {item.quantidade}</p>
               </Card.Body>
               <Card.Footer className="text-end">

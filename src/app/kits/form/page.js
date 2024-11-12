@@ -4,21 +4,25 @@ import Pagina from "@/components/Pagina";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Row, Card } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 import * as Yup from "yup";
+import InputMask from "react-input-mask";
 
-export default function LivroFormPage(props) {
+export default function KitFormPage(props) {
   const [editoraFiltrada, setEditoraFiltrada] = useState([]);
   const [autorFiltrado, setAutorFiltrado] = useState([]);
-  const router = useRouter();
+  const [livroFiltrado, setLivroFiltrado] = useState([]);
 
   const editoras = JSON.parse(localStorage.getItem("editoras")) || [];
   const autores = JSON.parse(localStorage.getItem("autores")) || [];
   const livros = JSON.parse(localStorage.getItem("livros")) || [];
-  const id = props.searchParams?.id;
-  const livroEditado = livros.find((item) => item.id === id);
+
+  const router = useRouter();
+  const kits = JSON.parse(localStorage.getItem("kits")) || [];
+  const id = props.searchParams.id;
+  const kitEditado = kits.find((item) => item.id === id);
 
   useEffect(() => {
     if (autores.length > 0) setAutorFiltrado(autores);
@@ -26,95 +30,50 @@ export default function LivroFormPage(props) {
   useEffect(() => {
     if (editoras.length > 0) setEditoraFiltrada(editoras);
   }, [editoras]);
+  useEffect(() => {
+    if (livros.length > 0) setLivroFiltrado(livros);
+  }, [livros]);
 
   function salvar(dados) {
-    if (livroEditado) {
-      Object.assign(livroEditado, dados);
-      localStorage.setItem("livros", JSON.stringify(livros));
+    if (kitEditado) {
+      Object.assign(kitEditado, dados);
+      localStorage.setItem("kits", JSON.stringify(kits));
     } else {
-      dados.id = uuidv4();
-      livros.push(dados);
-      localStorage.setItem("livros", JSON.stringify(livros));
+      dados.id = v4();
+      kits.push(dados);
+      localStorage.setItem("kits", JSON.stringify(kits));
     }
 
-    alert("Livro salvo com sucesso!");
-    router.push("/livros");
+    alert("Kit salvo com sucesso!");
+    router.push("/kits");
   }
 
   const initialValues = {
-    titulo: "",
-    autores: "",
-    anoPublicacao: "",
-    literario: "",
-    preco: 1,
-    editoras: "",
-    quantidadeEstoque: 1,
+    nome: "",
     descricao: "",
+    estoque: "1",
+    autores: "",
+    editoras: "",
+    livros: "",
+    literario: "",
+    valor: "",
   };
 
   const validationSchema = Yup.object().shape({
-    titulo: Yup.string().required("Campo obrigatório"),
-    autores: Yup.string().required("Campo obrigatório"),
-    anoPublicacao: Yup.date().required("Campo obrigatório"),
-    literario: Yup.string().required("Campo obrigatório"),
-    preco: Yup.number()
-      .min(0, "Deve ser um valor positivo")
-      .required("Campo obrigatório"),
-    editoras: Yup.string().required("Campo obrigatório"),
-    quantidadeEstoque: Yup.number()
-      .min(0, "Deve ser um número positivo")
-      .required("Campo obrigatório"),
+    nome: Yup.string().required("Campo obrigatório"),
     descricao: Yup.string().required("Campo obrigatório"),
+    estoque: Yup.number().required("Campo obrigatório"),
+    autores: Yup.string().required("Campo obrigatório"),
+    editoras: Yup.string().required("Campo obrigatório"),
+    literario: Yup.string().required("Campo Obrigatório"),
+    livros: Yup.string().required("Campo Obrigatório"),
+    valor: Yup.string().required("Campo obrigatório"),
   });
 
-  const calcularEstatisticas = () => {
-    const totalLivros = livros.length;
-    const totalEstoque = livros.reduce(
-      (acc, livro) => acc + livro.quantidadeEstoque,
-      0
-    );
-    const mediaPreco =
-      totalLivros > 0
-        ? livros.reduce((acc, livro) => acc + livro.preco, 0) / totalLivros
-        : 0;
-
-    return {
-      totalLivros,
-      totalEstoque,
-      mediaPreco: mediaPreco.toFixed(2),
-    };
-  };
-
-  const { totalLivros, totalEstoque, mediaPreco } = calcularEstatisticas();
-
   return (
-    <Pagina titulo={"Cadastro de Livro"}>
-      {/* Dashboard */}
-      <Card className="mb-4">
-        <Card.Body>
-          <Card.Title>Dashboard de Estatísticas</Card.Title>
-          <Row>
-            <Col>
-              <Card.Text>
-                <strong>Total de Livros:</strong> {totalLivros}
-              </Card.Text>
-            </Col>
-            <Col>
-              <Card.Text>
-                <strong>Total em Estoque:</strong> {totalEstoque}
-              </Card.Text>
-            </Col>
-            <Col>
-              <Card.Text>
-                <strong>Média de Preço:</strong> R$ {mediaPreco}
-              </Card.Text>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
+    <Pagina titulo={"Cadastro de Kits"}>
       <Formik
-        initialValues={livroEditado || initialValues}
+        initialValues={kitEditado || initialValues}
         validationSchema={validationSchema}
         onSubmit={salvar}
       >
@@ -129,18 +88,18 @@ export default function LivroFormPage(props) {
           <Form onSubmit={handleSubmit}>
             <Row className="mb-2">
               <Form.Group as={Col}>
-                <Form.Label>Título:</Form.Label>
+                <Form.Label>Nome do kit:</Form.Label>
                 <Form.Control
-                  name="titulo"
+                  name="nome"
                   type="text"
-                  value={values.titulo}
+                  value={values.nome}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={touched.titulo && !errors.titulo}
-                  isInvalid={touched.titulo && errors.titulo}
+                  isValid={touched.nome && !errors.nome}
+                  isInvalid={touched.nome && errors.nome}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.titulo}
+                  {errors.nome}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -167,7 +126,6 @@ export default function LivroFormPage(props) {
                   {errors.autores}
                 </Form.Control.Feedback>
               </Form.Group>
-
               <Form.Group as={Col}>
                 <Form.Label>Editora:</Form.Label>
                 <Form.Select
@@ -193,18 +151,24 @@ export default function LivroFormPage(props) {
 
             <Row className="mb-2">
               <Form.Group as={Col}>
-                <Form.Label>Ano de Publicação:</Form.Label>
-                <Form.Control
-                  name="anoPublicacao"
-                  type="date"
-                  value={values.anoPublicacao}
+                <Form.Label>Livro:</Form.Label>
+                <Form.Select
+                  name="livros"
+                  value={values.livros}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={touched.anoPublicacao && !errors.anoPublicacao}
-                  isInvalid={touched.anoPublicacao && errors.anoPublicacao}
-                />
+                  isValid={touched.livros && !errors.livros}
+                  isInvalid={touched.livros && errors.livros}
+                >
+                  <option value="">Selecione</option>
+                  {livroFiltrado.map((livro) => (
+                    <option key={livro.titulo} value={livro.titulo}>
+                      {livro.titulo}
+                    </option>
+                  ))}
+                </Form.Select>
                 <Form.Control.Feedback type="invalid">
-                  {errors.anoPublicacao}
+                  {errors.livros}
                 </Form.Control.Feedback>
               </Form.Group>
 
@@ -235,38 +199,41 @@ export default function LivroFormPage(props) {
 
             <Row className="mb-2">
               <Form.Group as={Col}>
-                <Form.Label>Preço:</Form.Label>
+                <Form.Label>Estoque:</Form.Label>
                 <Form.Control
-                  name="preco"
+                  name="estoque"
                   type="number"
-                  value={values.preco}
+                  value={values.estoque}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={touched.preco && !errors.preco}
-                  isInvalid={touched.preco && errors.preco}
+                  isValid={touched.estoque && !errors.estoque}
+                  isInvalid={touched.estoque && errors.estoque}
                 />
                 <Form.Control.Feedback type="invalid">
-                  {errors.preco}
+                  {errors.estoque}
                 </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col}>
-                <Form.Label>Quantidade em Estoque:</Form.Label>
-                <Form.Control
-                  name="quantidadeEstoque"
-                  type="number"
-                  value={values.quantidadeEstoque}
+                <Form.Label>Taxa:</Form.Label>
+                <InputMask
+                  mask="R$ 999,99"
+                  maskPlaceholder={null}
+                  value={values.valor}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={
-                    touched.quantidadeEstoque && !errors.quantidadeEstoque
-                  }
-                  isInvalid={
-                    touched.quantidadeEstoque && errors.quantidadeEstoque
-                  }
-                />
+                >
+                  {(inputProps) => (
+                    <Form.Control
+                      {...inputProps}
+                      name="valor"
+                      isValid={touched.valor && !errors.valor}
+                      isInvalid={touched.valor && errors.valor}
+                    />
+                  )}
+                </InputMask>
                 <Form.Control.Feedback type="invalid">
-                  {errors.quantidadeEstoque}
+                  {errors.valor}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -276,8 +243,9 @@ export default function LivroFormPage(props) {
                 <Form.Label>Descrição:</Form.Label>
                 <Form.Control
                   name="descricao"
+                  type="text"
                   as="textarea"
-                  rows={3}
+                  rows={5}
                   value={values.descricao}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -290,14 +258,14 @@ export default function LivroFormPage(props) {
               </Form.Group>
             </Row>
 
-            <div className="text-center mt-3">
-              <Button className="me-2" onClick={() => router.push("/livros")}>
+            <Form.Group className="text-end">
+              <Button className="me-2" href="/kits">
                 <FaArrowLeft /> Voltar
               </Button>
               <Button type="submit" variant="success">
-                <FaCheck /> Salvar
+                <FaCheck /> Enviar
               </Button>
-            </div>
+            </Form.Group>
           </Form>
         )}
       </Formik>

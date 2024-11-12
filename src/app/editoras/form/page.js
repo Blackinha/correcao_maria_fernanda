@@ -7,6 +7,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { v4 } from "uuid";
 import * as Yup from "yup";
+import InputMask from "react-input-mask";
 
 export default function EditoraFormPage(props) {
   const router = useRouter();
@@ -30,10 +31,10 @@ export default function EditoraFormPage(props) {
 
   const initialValues = {
     nome: "",
-    localizacao: "",
+    cep: "",
     anoFundacao: "",
     status: "",
-    quantidadeLivros: 0,
+    quantidadeLivros: 1,
     email: "",
     telefone: "",
     website: "",
@@ -42,10 +43,8 @@ export default function EditoraFormPage(props) {
 
   const validationSchema = Yup.object().shape({
     nome: Yup.string().required("Campo obrigatório"),
-    localizacao: Yup.string().required("Campo obrigatório"),
-    anoFundacao: Yup.number()
-      .typeError("Deve ser um ano válido")
-      .required("Campo obrigatório"),
+    cep: Yup.string().required("Campo obrigatório"),
+    anoFundacao: Yup.date().required("Campo obrigatório"),
     status: Yup.string().required("Campo obrigatório"),
     quantidadeLivros: Yup.number()
       .min(0, "Deve ser um número positivo")
@@ -96,18 +95,25 @@ export default function EditoraFormPage(props) {
 
             <Row className="mb-2">
               <Form.Group as={Col}>
-                <Form.Label>Localização:</Form.Label>
-                <Form.Control
-                  name="localizacao"
-                  type="text"
-                  value={values.localizacao}
+                <Form.Label>CEP:</Form.Label>
+                <InputMask
+                  mask="99999-999"
+                  value={values.cep}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isValid={touched.localizacao && !errors.localizacao}
-                  isInvalid={touched.localizacao && errors.localizacao}
-                />
+                >
+                  {(inputProps) => (
+                    <Form.Control
+                      {...inputProps}
+                      name="cep"
+                      isValid={touched.cep && !errors.cep}
+                      isInvalid={touched.cep && errors.cep}
+                      placeholder="Digite o CEP"
+                    />
+                  )}
+                </InputMask>
                 <Form.Control.Feedback type="invalid">
-                  {errors.localizacao}
+                  {errors.cep}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -117,7 +123,7 @@ export default function EditoraFormPage(props) {
                 <Form.Label>Ano de Fundação:</Form.Label>
                 <Form.Control
                   name="anoFundacao"
-                  type="number"
+                  type="date"
                   value={values.anoFundacao}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -128,11 +134,33 @@ export default function EditoraFormPage(props) {
                   {errors.anoFundacao}
                 </Form.Control.Feedback>
               </Form.Group>
+
+              <Form.Group as={Col}>
+                <Form.Label>Telefone:</Form.Label>
+                <InputMask
+                  mask="(99) 99999-9999"
+                  value={values.telefone}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                >
+                  {(inputProps) => (
+                    <Form.Control
+                      {...inputProps}
+                      name="telefone"
+                      isValid={touched.telefone && !errors.telefone}
+                      isInvalid={touched.telefone && errors.telefone}
+                    />
+                  )}
+                </InputMask>
+                <Form.Control.Feedback type="invalid">
+                  {errors.telefone}
+                </Form.Control.Feedback>
+              </Form.Group>
             </Row>
 
             <Row className="mb-2">
               <Form.Group as={Col}>
-                <Form.Label>Status:</Form.Label>
+                <Form.Label>Preferência de Contato:</Form.Label>
                 <Form.Select
                   name="status"
                   value={values.status}
@@ -142,16 +170,14 @@ export default function EditoraFormPage(props) {
                   isInvalid={touched.status && errors.status}
                 >
                   <option value="">Selecione</option>
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
+                  <option value="Telefone">Telefone</option>
+                  <option value="E-mail">E-mail</option>
                 </Form.Select>
                 <Form.Control.Feedback type="invalid">
                   {errors.status}
                 </Form.Control.Feedback>
               </Form.Group>
-            </Row>
 
-            <Row className="mb-2">
               <Form.Group as={Col}>
                 <Form.Label>Quantidade de Livros:</Form.Label>
                 <Form.Control
@@ -187,22 +213,6 @@ export default function EditoraFormPage(props) {
                   {errors.email}
                 </Form.Control.Feedback>
               </Form.Group>
-
-              <Form.Group as={Col}>
-                <Form.Label>Telefone:</Form.Label>
-                <Form.Control
-                  name="telefone"
-                  type="text"
-                  value={values.telefone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  isValid={touched.telefone && !errors.telefone}
-                  isInvalid={touched.telefone && errors.telefone}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {errors.telefone}
-                </Form.Control.Feedback>
-              </Form.Group>
             </Row>
 
             <Row className="mb-2">
@@ -211,6 +221,7 @@ export default function EditoraFormPage(props) {
                 <Form.Control
                   name="website"
                   type="url"
+                  placeholder="url do site.com"
                   value={values.website}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -221,13 +232,15 @@ export default function EditoraFormPage(props) {
                   {errors.website}
                 </Form.Control.Feedback>
               </Form.Group>
+            </Row>
 
+            <Row className="mb-2">
               <Form.Group as={Col}>
                 <Form.Label>Descrição:</Form.Label>
                 <Form.Control
                   name="descricao"
                   as="textarea"
-                  rows={3}
+                  rows={5}
                   value={values.descricao}
                   onChange={handleChange}
                   onBlur={handleBlur}

@@ -8,25 +8,17 @@ import { FaPen, FaPlusCircle, FaTrash } from "react-icons/fa";
 export default function AutoresPage() {
   const [autores, setAutores] = useState([]);
 
-  // Faz alguma coisa quando o usuário acessa a tela
   useEffect(() => {
-    // Busca a lista de autores do localStorage, se não existir, inicia uma lista vazia
     const autoresLocalStorage =
       JSON.parse(localStorage.getItem("autores")) || [];
-    // Guarda a lista no estado autores
     setAutores(autoresLocalStorage);
     console.log(autoresLocalStorage);
   }, []);
 
-  // Função para exclusão do item
   function excluir(autor) {
-    // Confirma com o usuário a exclusão
     if (window.confirm(`Deseja realmente excluir o autor ${autor.nome}?`)) {
-      // Filtra a lista antiga removendo o autor recebido
       const novaLista = autores.filter((item) => item.id !== autor.id);
-      // Grava a nova lista no localStorage
       localStorage.setItem("autores", JSON.stringify(novaLista));
-      // Atualiza o estado para renderizar a nova lista na tela
       setAutores(novaLista);
       alert("Autor excluído com sucesso!");
     }
@@ -48,7 +40,7 @@ export default function AutoresPage() {
             <th>Biografia</th>
             <th>País</th>
             <th>Estado</th>
-            <th>Cidade</th>
+            <th>Gênero Literário</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -60,7 +52,7 @@ export default function AutoresPage() {
                 <td>{autor.biografia}</td>
                 <td>{autor.pais}</td>
                 <td>{autor.estado}</td>
-                <td>{autor.cidade}</td>
+                <td>{autor.literario}</td>
                 <td className="text-center">
                   {/* Botões das ações */}
                   <Button

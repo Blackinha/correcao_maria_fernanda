@@ -3,30 +3,22 @@
 import Pagina from "@/components/Pagina";
 import { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
-import { FaPen, FaPlusCircle, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPen, FaPlusCircle, FaTrash, FaTrashAlt } from "react-icons/fa";
 
 export default function EditorasPage() {
   const [editoras, setEditoras] = useState([]);
 
-  // Carrega as editoras quando a tela é acessada
   useEffect(() => {
-    // Busca a lista de editoras do localStorage, se não existir, inicia uma vazia
     const editorasLocalStorage =
       JSON.parse(localStorage.getItem("editoras")) || [];
-    // Guarda a lista no estado
     setEditoras(editorasLocalStorage);
     console.log(editorasLocalStorage);
   }, []);
 
-  // Função para exclusão de uma editora
   function excluir(editora) {
-    // Confirma com o usuário a exclusão
     if (window.confirm(`Deseja realmente excluir a editora ${editora.nome}?`)) {
-      // Filtra a lista antiga, removendo a editora recebida
       const novaLista = editoras.filter((item) => item.id !== editora.id);
-      // Grava no localStorage a nova lista
       localStorage.setItem("editoras", JSON.stringify(novaLista));
-      // Atualiza a nova lista no estado para renderizar na tela
       setEditoras(novaLista);
       alert("Editora excluída com sucesso!");
     }
@@ -45,9 +37,9 @@ export default function EditorasPage() {
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Localização</th>
+            <th>CEP</th>
             <th>Ano de Fundação</th>
-            <th>Status</th>
+            <th>Preferência de Contato</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -56,19 +48,18 @@ export default function EditorasPage() {
             return (
               <tr key={editora.id}>
                 <td>{editora.nome}</td>
-                <td>{editora.localizacao}</td>
+                <td>{editora.cep}</td>
                 <td>{editora.anoFundacao}</td>
                 <td>{editora.status}</td>
                 <td className="text-center">
-                  {/* Botões das ações */}
                   <Button
                     className="me-2"
                     href={`/editoras/form?id=${editora.id}`}
                   >
-                    <FaPen />
+                    <FaEdit />
                   </Button>
                   <Button variant="danger" onClick={() => excluir(editora)}>
-                    <FaTrash />
+                    <FaTrashAlt />
                   </Button>
                 </td>
               </tr>
